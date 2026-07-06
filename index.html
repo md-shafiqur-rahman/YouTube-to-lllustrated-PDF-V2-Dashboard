@@ -410,7 +410,7 @@ function renderJob(job){
   if(job.status==="processing") metaLine=`Printing · <span data-elapsed="${job.id}">${fmtElapsed(Date.now()-job.started)}</span>`;
   else if(job.status==="ready") metaLine=`Printed in ${fmtElapsed((job.finished||job.started)-job.started)}`;
   else metaLine=job.error||"Printing stopped.";
-  let action = job.status==="ready" ? `<button class="openbtn" data-open="${job.id}">Open PDF</button>` : "";
+  let action = job.status==="ready" ? `<a href="${job.pdf_url}" target="_blank"><button class="openbtn" data-open="${job.id}">Open PDF</button></a>` : "";
   el.innerHTML=`
     ${job.status==="ready"?'<span class="stamp">Printed</span>':''}
     <div>
