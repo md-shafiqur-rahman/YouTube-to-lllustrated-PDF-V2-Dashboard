@@ -289,7 +289,7 @@ $("#topic").addEventListener("keydown", e => { if(e.key==="Enter" && (e.metaKey|
 
 async function submit(){
   const topic = $("#topic").value.trim();
-  const chapters = parseInt($("#chapters").value,10) || 8;
+  const chapters = parseInt($("#chapters").value,10) || 1;
   const language = $("#language").value.trim() || "English";
   if(!topic){ $("#topic").focus(); toast("Add a topic","Tell the press what to print."); return; }
 
@@ -306,7 +306,7 @@ async function submit(){
     demoReadyAt: settings.DEMO_MODE ? Date.now() + (6000 + Math.random()*5000) : null,
   };
   jobs.unshift(job); save(); render();
-  $("#topic").value=""; $("#chapters").value="8"; $("#language").value="English";
+  $("#topic").value=""; $("#chapters").value="1"; $("#language").value="English";
   toast("Started printing","You'll hear a chime when it's ready.");
 
   if(!settings.DEMO_MODE){
