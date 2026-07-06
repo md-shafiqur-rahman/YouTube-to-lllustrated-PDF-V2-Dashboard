@@ -224,10 +224,10 @@ button{font:inherit;cursor:pointer;border:none;border-radius:6px}
 <script>
 /* ===== DEFAULTS (used only if nothing saved in Settings yet) ===== */
 const DEFAULTS = {
-  DEMO_MODE: true,
-  SUBMIT_WEBHOOK_URL: "",
-  STATUS_WEBHOOK_URL: "",
-  POLL_INTERVAL_MS: 6000,
+  DEMO_MODE: false,
+  SUBMIT_WEBHOOK_URL: "https://n8n.optimizerr.com/webhook/book-v2",
+  STATUS_WEBHOOK_URL: "https://n8n.optimizerr.com/webhook/book-v2-status",
+  POLL_INTERVAL_MS: 20000,
 };
 
 const STORE_KEY    = "bindery.jobs.v2";
