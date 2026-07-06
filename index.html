@@ -1,371 +1,411 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bindery — turn a topic into an illustrated book</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#ECEBE3;--surface:#FFFFFF;--surface-2:#F5F4EE;
-  --line:#1b1a1715;--line-solid:#DCDAD0;
-  --ink:#1C1B18;--muted:#6C6A61;--faint:#9A988D;
-  --accent:#3B4DD8;--accent-deep:#222C82;--accent-soft:#EDEFFF;
-  --ready:#1E9D6B;--stopped:#C8553B;
-  --radius:8px;--maxw:1080px;
+  --bg:#F4F3EE;--surface:#FFFFFF;--surface-2:#F7F6F1;
+  --line:#E4E2D9;--line-strong:#D6D4C9;
+  --ink:#1C1B18;--muted:#67655C;--faint:#9C9A8F;
+  --accent:#2F41C9;--accent-deep:#20297E;--accent-soft:#EDEFFE;
+  --ready:#177E56;--ready-soft:#E5F4EC;
+  --stopped:#BC4A31;--stopped-soft:#FBEDE9;
+  --amber:#996A13;
+  --radius:12px;--maxw:880px;
+  --shadow-sm:0 1px 2px #1b1a1709;
+  --shadow-md:0 2px 6px #1b1a170d,0 10px 28px #1b1a170a;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font-family:"Inter",system-ui,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;letter-spacing:-0.005em;min-height:100vh}
-.mono{font-family:"Space Mono",ui-monospace,monospace}
 a{color:var(--accent)}
-.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+button{font:inherit;cursor:pointer;border:none;border-radius:8px;color:inherit;background:none;padding:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
-header{padding:30px 0 24px;margin-bottom:32px;border-bottom:1px solid var(--line-solid)}
-.brand{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.brand .seal{font-family:"Fraunces",serif;font-weight:900;font-size:12px;letter-spacing:.16em;color:#fff;background:var(--accent);padding:6px 10px;border-radius:5px;text-transform:uppercase;line-height:1}
-.brand h1{font-family:"Fraunces",serif;font-weight:600;font-size:29px;letter-spacing:-0.02em;margin:0}
-.brand p{margin:1px 0 0;color:var(--muted);font-size:14px}
-.brand .spacer{flex:1}
-.headtools{display:flex;align-items:center;gap:16px}
-.statuslamp{display:flex;align-items:center;gap:8px;color:var(--faint);font-size:12px}
-.statuslamp i{width:7px;height:7px;border-radius:50%;background:var(--ready);box-shadow:0 0 0 3px #1e9d6b22}
-.statuslamp.demo i{background:var(--accent);box-shadow:0 0 0 3px #3b4dd822}
-.gear{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:var(--surface);border:1px solid var(--line-solid);color:var(--muted);cursor:pointer;transition:color .15s,border-color .15s}
-.gear:hover{color:var(--accent);border-color:var(--accent)}
-.gear svg{width:18px;height:18px}
+/* ---------- header ---------- */
+header{border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:20}
+.bar{display:flex;align-items:center;gap:12px;height:60px}
+.seal{font-family:"Fraunces",serif;font-weight:900;font-size:11px;letter-spacing:.18em;color:#fff;background:var(--ink);padding:6px 9px;border-radius:6px;text-transform:uppercase;line-height:1}
+.bar h1{font-family:"Fraunces",serif;font-weight:600;font-size:19px;letter-spacing:-0.01em;margin:0}
+.bar .spacer{flex:1}
+.lamp{display:flex;align-items:center;gap:8px;font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.05em;color:var(--muted);padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface-2)}
+.lamp i{width:7px;height:7px;border-radius:50%;background:var(--ready);flex:0 0 auto;animation:lamp 2.8s ease-in-out infinite}
+.lamp.off{color:var(--stopped)}
+.lamp.off i{background:var(--stopped);animation:none}
+@keyframes lamp{0%,100%{opacity:1}50%{opacity:.4}}
 
-.grid{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:36px;align-items:start;padding-bottom:80px}
-@media (max-width:820px){.grid{grid-template-columns:1fr;gap:28px}}
+/* ---------- composer ---------- */
+.composer{margin:36px 0 44px}
+.composer .lede{font-family:"Fraunces",serif;font-weight:600;font-size:26px;letter-spacing:-0.02em;margin:0 0 4px}
+.composer .sub{color:var(--muted);font-size:14px;margin:0 0 18px}
+.desk{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-md);overflow:hidden;transition:border-color .15s,box-shadow .15s}
+.desk:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px #2f41c91c,var(--shadow-md)}
+.desk textarea{display:block;width:100%;border:none;outline:none;resize:none;background:transparent;font:inherit;font-size:16.5px;line-height:1.5;padding:18px 20px 10px;min-height:74px;color:var(--ink)}
+.desk textarea::placeholder{color:var(--faint)}
+.deskbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px 12px;border-top:1px dashed var(--line)}
+.ctl{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px;color:var(--muted)}
+.ctl label{font-size:11px;font-weight:500;color:var(--faint);text-transform:uppercase;letter-spacing:.07em}
+.step{display:flex;align-items:center;gap:2px}
+.step button{width:24px;height:24px;border-radius:6px;color:var(--muted);font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center}
+.step button:hover{background:var(--line);color:var(--ink)}
+.step input{width:36px;border:none;background:transparent;text-align:center;font:inherit;font-size:14px;font-weight:600;color:var(--ink);outline:none;-moz-appearance:textfield;appearance:textfield}
+.step input::-webkit-outer-spin-button,.step input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.ctl input[type=text]{border:none;background:transparent;font:inherit;font-size:14px;font-weight:500;color:var(--ink);outline:none;width:96px}
+.deskbar .spacer{flex:1}
+.hintline{font-size:11.5px;color:var(--faint);white-space:nowrap}
+kbd{font-family:"Space Mono",monospace;font-size:9.5px;background:var(--surface-2);border:1px solid var(--line-strong);border-bottom-width:2px;border-radius:4px;padding:1px 4px;color:var(--muted)}
+.go{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;font-weight:600;font-size:14px;padding:10px 18px;border-radius:9px;transition:background .15s,transform .05s,opacity .15s}
+.go:hover{background:var(--accent-deep)}
+.go:active{transform:translateY(1px)}
+.go:disabled{opacity:.5;cursor:default;transform:none}
+.go svg{width:15px;height:15px}
+@media (max-width:560px){.hintline{display:none}.go{flex:1;justify-content:center}}
 
-.panel{background:var(--surface);border:1px solid var(--line-solid);border-radius:var(--radius);padding:24px;box-shadow:0 1px 2px #1b1a1708}
-.eyebrow{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin:0 0 5px}
-.panel h2{font-family:"Fraunces",serif;font-weight:600;font-size:21px;margin:0 0 18px;letter-spacing:-0.01em}
-label{display:block;font-size:12.5px;color:var(--muted);margin:0 0 6px;font-weight:500}
-.field{margin-bottom:16px}
-.row{display:grid;grid-template-columns:1fr 1.2fr;gap:12px}
-input,textarea{width:100%;background:var(--surface-2);border:1px solid var(--line-solid);color:var(--ink);font:inherit;font-size:14.5px;padding:11px 12px;border-radius:6px;outline:none;transition:border-color .15s,box-shadow .15s,background .15s}
-textarea{resize:vertical;min-height:64px;line-height:1.5}
-input::placeholder,textarea::placeholder{color:var(--faint)}
-input:focus,textarea:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px #3b4dd820}
-.hint{font-size:11.5px;color:var(--faint);margin:5px 0 0}
-
-button{font:inherit;cursor:pointer;border:none;border-radius:6px}
-.btn-primary{width:100%;background:var(--accent);color:#fff;font-weight:600;font-size:14.5px;padding:12px;transition:filter .15s,transform .05s}
-.btn-primary:hover{filter:brightness(1.06)}
-.btn-primary:active{transform:translateY(1px)}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-
-.setup-note{margin-top:18px;padding-top:16px;border-top:1px solid var(--line-solid);font-size:11.5px;color:var(--faint);line-height:1.55}
-.demo-flag{display:inline-block;margin-top:10px;font-family:"Space Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep);background:var(--accent-soft);padding:4px 8px;border-radius:4px}
-
-.queue-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px}
-.queue-head h2{font-family:"Fraunces",serif;font-weight:600;font-size:22px;margin:0}
-.queue-head .count{font-family:"Space Mono",monospace;font-size:12px;color:var(--faint)}
-.subbar{text-align:right;margin:0 0 14px}
-.clearbtn{background:transparent;color:var(--faint);font-size:12px;padding:4px 0;text-decoration:underline;text-underline-offset:3px}
+/* ---------- library ---------- */
+.lib-head{display:flex;align-items:baseline;gap:12px;margin:0 0 16px}
+.lib-head h2{font-family:"Fraunces",serif;font-weight:600;font-size:20px;margin:0;letter-spacing:-0.01em}
+.count{font-family:"Space Mono",monospace;font-size:11.5px;color:var(--faint)}
+.lib-head .spacer{flex:1}
+.clearbtn{color:var(--faint);font-size:12.5px;text-decoration:underline;text-underline-offset:3px;padding:4px 0}
 .clearbtn:hover{color:var(--muted)}
 
-.empty{background:var(--surface);border:1px dashed var(--line-solid);border-radius:var(--radius);padding:42px 24px;text-align:center;color:var(--faint)}
+.empty{border:1.5px dashed var(--line-strong);border-radius:var(--radius);padding:56px 24px;text-align:center;color:var(--faint)}
+.empty .shelf{display:flex;justify-content:center;align-items:flex-end;gap:5px;margin-bottom:18px;opacity:.85}
+.empty .shelf i{display:block;width:14px;border-radius:3px 3px 0 0;background:var(--line-strong)}
+.empty .shelf i:nth-child(1){height:34px}.empty .shelf i:nth-child(2){height:44px;background:#c9c6b8}.empty .shelf i:nth-child(3){height:38px}.empty .shelf i:nth-child(4){height:48px;background:#c9c6b8}.empty .shelf i:nth-child(5){height:30px}
 .empty strong{display:block;color:var(--muted);font-family:"Fraunces",serif;font-size:17px;font-weight:600;margin-bottom:4px}
 
-.jobs{display:flex;flex-direction:column;gap:12px}
-.job{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--line-solid);border-left:3px solid var(--faint);border-radius:var(--radius);padding:16px 18px;box-shadow:0 1px 2px #1b1a1708;display:grid;grid-template-columns:1fr auto;gap:4px 16px;align-items:center}
-.job.is-printing{border-left-color:var(--accent)}
-.job.is-ready{border-left-color:var(--ready)}
-.job.is-stopped{border-left-color:var(--stopped)}
-.job.is-new{animation:flash 1.3s ease-out}
-@keyframes flash{0%{background:var(--accent-soft)}100%{background:var(--surface)}}
-.job .catalog{font-family:"Space Mono",monospace;font-size:11px;color:var(--faint);letter-spacing:.06em}
-.job .title{font-family:"Fraunces",serif;font-size:18px;font-weight:600;margin:2px 0 4px;letter-spacing:-0.01em;word-break:break-word;line-height:1.25}
+.jobs{display:flex;flex-direction:column;gap:12px;padding-bottom:90px}
+.job{position:relative;overflow:hidden;display:flex;gap:18px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow-sm);transition:box-shadow .15s,border-color .15s}
+.job:hover{box-shadow:var(--shadow-md)}
+.job.is-new{animation:arrive .5s ease-out}
+@keyframes arrive{0%{opacity:0;transform:translateY(-6px)}100%{opacity:1;transform:none}}
+
+/* miniature book cover */
+.cover{position:relative;flex:0 0 auto;width:62px;height:88px;border-radius:3px 6px 6px 3px;background:linear-gradient(150deg,hsl(var(--h),46%,34%),hsl(calc(var(--h) + 38),52%,52%));box-shadow:0 2px 6px #1b1a172e,inset -1px 0 0 #ffffff20;display:flex;flex-direction:column;justify-content:space-between;padding:9px 8px 7px 12px}
+.cover::before{content:"";position:absolute;left:5px;top:0;bottom:0;width:1px;background:#00000026}
+.cover .ct{font-family:"Fraunces",serif;font-weight:600;font-size:8.5px;line-height:1.3;color:#fff;overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;line-clamp:4;-webkit-box-orient:vertical;word-break:break-word}
+.cover .cn{font-family:"Space Mono",monospace;font-size:6.5px;letter-spacing:.1em;color:#ffffffb0}
+.is-stopped .cover{filter:saturate(.15) brightness(1.05)}
+.is-printing .cover::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(105deg,transparent 30%,#ffffff2e 50%,transparent 70%);background-size:220% 100%;animation:sheen 2.4s ease-in-out infinite}
+@keyframes sheen{0%{background-position:120% 0}100%{background-position:-120% 0}}
+
+.job .body{flex:1;min-width:0}
+.catalog{font-family:"Space Mono",monospace;font-size:10.5px;color:var(--faint);letter-spacing:.08em}
+.title{font-family:"Fraunces",serif;font-size:18px;font-weight:600;margin:2px 0 5px;letter-spacing:-0.01em;word-break:break-word;line-height:1.3}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
-.chip{font-family:"Space Mono",monospace;font-size:10.5px;letter-spacing:.04em;color:var(--muted);background:var(--surface-2);border:1px solid var(--line-solid);padding:2px 8px;border-radius:20px}
-.job .meta{font-family:"Space Mono",monospace;font-size:11px;color:var(--faint);margin-top:8px}
+.chip{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.03em;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);padding:2px 8px;border-radius:20px}
+.meta{font-family:"Space Mono",monospace;font-size:11px;color:var(--faint);margin-top:8px}
+.meta .warn{color:var(--amber)}
 .is-stopped .meta{color:var(--stopped)}
-.job .right{grid-row:1 / span 4;display:flex;flex-direction:column;align-items:flex-end;gap:10px;justify-self:end}
-.state{display:inline-flex;align-items:center;gap:7px;font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
-.state .dot{width:7px;height:7px;border-radius:50%}
-.is-printing .state{color:var(--accent)} .is-printing .dot{background:var(--accent);animation:pulse 1.3s ease-in-out infinite}
-.is-ready .state{color:var(--ready)} .is-ready .dot{background:var(--ready)}
-.is-stopped .state{color:var(--stopped)} .is-stopped .dot{background:var(--stopped)}
+
+.job .actions{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:9px}
+.state{display:inline-flex;align-items:center;gap:7px;font-family:"Space Mono",monospace;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;padding:4px 11px;border-radius:20px}
+.state .dot{width:6px;height:6px;border-radius:50%}
+.is-printing .state{color:var(--accent-deep);background:var(--accent-soft)}.is-printing .dot{background:var(--accent);animation:pulse 1.3s ease-in-out infinite}
+.is-ready .state{color:var(--ready);background:var(--ready-soft)}.is-ready .dot{background:var(--ready)}
+.is-stopped .state{color:var(--stopped);background:var(--stopped-soft)}.is-stopped .dot{background:var(--stopped)}
 @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
-.openbtn{background:var(--accent);color:#fff;font-weight:600;font-size:12.5px;padding:8px 15px;white-space:nowrap}
-.openbtn:hover{filter:brightness(1.06)}
-.linkbtn{background:transparent;color:var(--faint);font-size:11.5px;padding:2px 0;text-decoration:underline;text-underline-offset:2px}
+.openbtn{background:var(--ink);color:#fff;font-weight:600;font-size:12.5px;padding:8px 16px;border-radius:8px;white-space:nowrap;transition:background .15s}
+.openbtn:hover{background:#000}
+.subacts{display:flex;gap:12px}
+.linkbtn{color:var(--faint);font-size:11.5px;text-decoration:underline;text-underline-offset:2px;padding:2px 0}
 .linkbtn:hover{color:var(--muted)}
-.stamp{position:absolute;right:-10px;top:50%;transform:translateY(-50%) rotate(-8deg);font-family:"Fraunces",serif;font-weight:900;font-size:32px;letter-spacing:.03em;color:#1e9d6b14;pointer-events:none;user-select:none;text-transform:uppercase}
+.linkbtn.retry{color:var(--accent)}
+.linkbtn.danger:hover{color:var(--stopped)}
+.pressbar{position:absolute;left:0;right:0;bottom:0;height:2px;overflow:hidden;display:none}
+.is-printing .pressbar{display:block}
+.pressbar i{position:absolute;top:0;bottom:0;width:34%;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:slide 2.2s ease-in-out infinite}
+@keyframes slide{0%{left:-34%}100%{left:100%}}
 
-/* settings modal */
-.overlay{position:fixed;inset:0;background:#1b1a1766;display:none;align-items:center;justify-content:center;padding:24px;z-index:50}
+@media (max-width:600px){
+  .job{flex-wrap:wrap}
+  .job .actions{flex-direction:row;width:100%;align-items:center;justify-content:space-between;order:3;padding-top:12px;border-top:1px dashed var(--line)}
+}
+
+/* ---------- confirm modal ---------- */
+.overlay{position:fixed;inset:0;background:#1b1a1755;backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;padding:24px;z-index:50}
 .overlay.show{display:flex}
-.modal{background:var(--surface);border:1px solid var(--line-solid);border-radius:12px;width:100%;max-width:480px;padding:26px;box-shadow:0 24px 60px #1b1a1733;max-height:90vh;overflow:auto}
-.modal h3{font-family:"Fraunces",serif;font-weight:600;font-size:21px;margin:0 0 4px}
-.modal .sub{color:var(--muted);font-size:13px;margin:0 0 20px}
-.switch-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-top:1px solid var(--line-solid);margin-top:6px}
-.switch-row .lab{font-size:13.5px;color:var(--ink);font-weight:500}
-.switch-row .desc{font-size:11.5px;color:var(--faint);margin-top:2px}
-.switch{position:relative;width:42px;height:24px;flex:0 0 auto}
-.switch input{opacity:0;width:0;height:0;position:absolute}
-.switch .track{position:absolute;inset:0;background:var(--line-solid);border-radius:999px;transition:background .15s}
-.switch .knob{position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .15s;box-shadow:0 1px 2px #00000030}
-.switch input:checked + .track{background:var(--accent)}
-.switch input:checked + .track + .knob{transform:translateX(18px)}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:14px;width:100%;max-width:420px;padding:26px;box-shadow:0 24px 60px #1b1a1740;animation:modalin .18s ease-out}
+@keyframes modalin{0%{opacity:0;transform:translateY(8px) scale(.98)}100%{opacity:1;transform:none}}
+.modal h3{font-family:"Fraunces",serif;font-weight:600;font-size:20px;margin:0 0 8px;letter-spacing:-0.01em}
+.modal p{color:var(--muted);font-size:13.5px;line-height:1.6;margin:0}
 .modal-actions{display:flex;gap:10px;margin-top:22px}
-.btn-ghost{flex:1;background:var(--surface-2);color:var(--ink);border:1px solid var(--line-solid);font-weight:500;font-size:14px;padding:11px}
-.btn-ghost:hover{background:#efeee7}
-.btn-save{flex:1.4;background:var(--accent);color:#fff;font-weight:600;font-size:14px;padding:11px}
-.btn-save:hover{filter:brightness(1.06)}
+.btn-ghost{flex:1;background:var(--surface-2);color:var(--ink);border:1px solid var(--line);font-weight:500;font-size:13.5px;padding:11px;border-radius:9px}
+.btn-ghost:hover{background:var(--line)}
+.btn-danger{flex:1.2;background:var(--stopped);color:#fff;font-weight:600;font-size:13.5px;padding:11px;border-radius:9px;transition:filter .15s}
+.btn-danger:hover{filter:brightness(.92)}
 
-#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);border:1px solid #00000020;color:#fff;padding:12px 18px;border-radius:8px;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:0 12px 34px #1b1a1733;max-width:90vw;z-index:60}
+/* ---------- toast ---------- */
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(16px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:0 12px 34px #1b1a1740;max-width:90vw;z-index:60}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #toast .t-title{font-weight:600}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+#toast .t-body{color:#ffffffb8;margin-left:4px}
 </style>
 </head>
 <body>
 <header>
-  <div class="wrap brand">
+  <div class="wrap bar">
     <span class="seal">Bindery</span>
-    <div>
-      <h1>The Bindery</h1>
-      <p>Turn a YouTube topic into an illustrated book.</p>
-    </div>
+    <h1>The Bindery</h1>
     <span class="spacer"></span>
-    <div class="headtools">
-      <span class="statuslamp" id="statuslamp"><i></i> <span id="lampText">Press is running</span></span>
-      <button class="gear" id="gearBtn" title="Settings" aria-label="Settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </button>
-    </div>
+    <span class="lamp" id="lamp"><i></i><span id="lampText">Press online</span></span>
   </div>
 </header>
 
-<main class="wrap grid">
-  <section class="panel" aria-label="Start a new book">
-    <p class="eyebrow">New run</p>
-    <h2>Start a new book</h2>
-    <div class="field">
-      <label for="topic">Topic or niche</label>
-      <textarea id="topic" placeholder="e.g. AI automation for restaurants"></textarea>
-      <p class="hint">Be specific — a tight sub-niche prints a sharper book.</p>
-    </div>
-    <div class="row">
-      <div class="field">
-        <label for="chapters">Chapters</label>
-        <input type="number" id="chapters" min="1" max="30" value="1" />
+<main class="wrap">
+  <section class="composer" aria-label="Start a new book">
+    <p class="lede">What should your book be about?</p>
+    <p class="sub">Give the press a topic — it writes, illustrates and binds a PDF in the background.</p>
+    <div class="desk">
+      <textarea id="topic" rows="2" placeholder="e.g. AI automation for restaurants — be specific, a tight sub-niche prints a sharper book" aria-label="Book topic"></textarea>
+      <div class="deskbar">
+        <div class="ctl">
+          <label for="chapters">Chapters</label>
+          <span class="step">
+            <button type="button" id="chapMinus" aria-label="Fewer chapters">−</button>
+            <input type="number" id="chapters" min="1" max="30" value="8" aria-label="Number of chapters">
+            <button type="button" id="chapPlus" aria-label="More chapters">+</button>
+          </span>
+        </div>
+        <div class="ctl">
+          <label for="language">Language</label>
+          <input type="text" id="language" value="English">
+        </div>
+        <span class="spacer"></span>
+        <span class="hintline"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> to start</span>
+        <button class="go" id="submitBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Generate book
+        </button>
       </div>
-      <div class="field">
-        <label for="language">Language</label>
-        <input type="text" id="language" value="English" />
-      </div>
-    </div>
-    <button class="btn-primary" id="submitBtn">Generate book</button>
-    <div class="setup-note">
-      Books print in the background — you can close this tab and come back; nothing is lost.
-      You'll hear a chime and get a desktop alert when one is ready.
-      <span class="demo-flag" id="demoFlag">Demo mode</span>
     </div>
   </section>
 
   <section aria-label="Your books">
-    <div class="queue-head">
-      <h2>Your books</h2>
-      <span class="count" id="count">0 total</span>
+    <div class="lib-head">
+      <h2>Library</h2>
+      <span class="count" id="count" aria-live="polite"></span>
+      <span class="spacer"></span>
+      <button class="clearbtn" id="clearFinished" style="display:none">Clear finished</button>
     </div>
-    <div class="subbar"><button class="clearbtn" id="clearFinished">Clear finished</button></div>
     <div id="jobs" class="jobs"></div>
     <div id="empty" class="empty">
-      <strong>No books yet</strong>
-      Start one on the left — it'll appear here while it prints.
+      <span class="shelf" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+      <strong>The shelf is empty</strong>
+      Your first book will appear here while it prints. You can close this tab — nothing is lost.
     </div>
   </section>
 </main>
 
-<!-- SETTINGS MODAL -->
-<div class="overlay" id="overlay">
-  <div class="modal" role="dialog" aria-modal="true" aria-label="Settings">
-    <h3>Settings</h3>
-    <p class="sub">Saved on this device. They stay put until you change them again.</p>
-
-    <div class="field">
-      <label for="setSubmit">Submit webhook URL</label>
-      <input type="text" id="setSubmit" value="https://n8n.optimizerr.com/webhook/book-v2/start-book" />
-      <p class="hint">Your main workflow's production webhook (replaces the form trigger).</p>
-    </div>
-    <div class="field">
-      <label for="setStatus">Status webhook URL</label>
-      <input type="text" id="setStatus" value="https://n8n.optimizerr.com/webhook/book-v2/book-status" />
-      <p class="hint">The small workflow that checks if a book's PDF is ready.</p>
-    </div>
-    <div class="field">
-      <label for="setPoll">Check every (seconds)</label>
-      <input type="number" id="setPoll" min="2" max="120" value="6" />
-    </div>
-
-    <div class="switch-row">
-      <div>
-        <div class="lab">Demo mode</div>
-        <div class="desc">Simulate finished books without calling n8n — for testing the dashboard.</div>
-      </div>
-      <label class="switch"><input type="checkbox" id="setDemo" /><span class="track"></span><span class="knob"></span></label>
-    </div>
-
+<div class="overlay" id="confirmOverlay">
+  <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmBody">
+    <h3 id="confirmTitle"></h3>
+    <p id="confirmBody"></p>
     <div class="modal-actions">
-      <button class="btn-ghost" id="cancelSettings">Cancel</button>
-      <button class="btn-save" id="saveSettings">Save settings</button>
+      <button class="btn-ghost" id="confirmNo"></button>
+      <button class="btn-danger" id="confirmYes"></button>
     </div>
   </div>
 </div>
 
-<div id="toast"><span class="t-title"></span> <span class="t-body"></span></div>
+<div id="toast" role="status"><span class="t-title"></span><span class="t-body"></span></div>
 
 <script>
-/* ===== DEFAULTS (used only if nothing saved in Settings yet) ===== */
-const DEFAULTS = {
-  DEMO_MODE: false,
-  SUBMIT_WEBHOOK_URL: "https://n8n.optimizerr.com/webhook/book-v2",
-  STATUS_WEBHOOK_URL: "https://n8n.optimizerr.com/webhook/book-v2-status",
-  POLL_INTERVAL_MS: 20000,
-};
+/* ===== CONFIG ===== */
+const SUBMIT_WEBHOOK_URL = "https://n8n.optimizerr.com/webhook/book-v2";
+const STATUS_WEBHOOK_URL = "https://n8n.optimizerr.com/webhook/book-v2-status";
+const POLL_INTERVAL_MS   = 20000;          // normal gap between status checks per book
+const POLL_MAX_MS        = 120000;         // backoff ceiling when the status webhook errors
+const SUBMIT_TIMEOUT_MS  = 20000;          // don't hang the submit request on long workflows
+const LONG_RUN_MS        = 20 * 60 * 1000; // after this, flag "taking longer than usual"
 
-const STORE_KEY    = "bindery.jobs.v2";
-const COUNTER_KEY  = "bindery.counter.v1";
-const SETTINGS_KEY = "bindery.settings.v1";
+const STORE_KEY   = "bindery.jobs.v2";
+const COUNTER_KEY = "bindery.counter.v1";
 
-/* settings persist in localStorage — saving once means it never resets */
-function loadSettings(){
-  try{ return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}); }
-  catch(e){ return Object.assign({}, DEFAULTS); }
-}
-function saveSettings(s){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }
-
-let settings = loadSettings();
 let jobs = load();
 let audioCtx = null;
+let pollState = {};   // per-job: { nextAt, interval } — backs off on errors, resets on success
+let inFlight = new Set();
 
 const $ = s => document.querySelector(s);
-const jobsEl = $("#jobs"), emptyEl = $("#empty"), countEl = $("#count");
+const jobsEl = $("#jobs"), emptyEl = $("#empty"), countEl = $("#count"), clearBtn = $("#clearFinished");
 
 function load(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }catch(e){ return []; } }
-function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(jobs)); }
-function nextCatalog(){ let n=parseInt(localStorage.getItem(COUNTER_KEY)||"0",10)+1; localStorage.setItem(COUNTER_KEY,String(n)); return n; }
+function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(jobs)); }catch(e){ console.warn("save failed:", e); } }
+function nextCatalog(){ let n=parseInt(localStorage.getItem(COUNTER_KEY)||"0",10)+1; try{ localStorage.setItem(COUNTER_KEY,String(n)); }catch(e){} return n; }
+function newId(){ return crypto.randomUUID ? crypto.randomUUID() : "id-"+Date.now()+Math.random().toString(16).slice(2); }
 
-/* ---- settings modal wiring ---- */
-$("#gearBtn").addEventListener("click", openSettings);
-$("#cancelSettings").addEventListener("click", closeSettings);
-$("#overlay").addEventListener("click", e => { if(e.target.id==="overlay") closeSettings(); });
-$("#saveSettings").addEventListener("click", () => {
-  const next = {
-    DEMO_MODE: $("#setDemo").checked,
-    SUBMIT_WEBHOOK_URL: $("#setSubmit").value.trim(),
-    STATUS_WEBHOOK_URL: $("#setStatus").value.trim(),
-    POLL_INTERVAL_MS: Math.max(2, parseInt($("#setPoll").value,10)||6) * 1000,
-  };
-  settings = next; saveSettings(settings);
-  reflectMode(); closeSettings();
-  toast("Settings saved", settings.DEMO_MODE ? "Running in demo mode." : "Connected to your webhooks.");
-});
-function openSettings(){
-  $("#setSubmit").value = settings.SUBMIT_WEBHOOK_URL || "";
-  $("#setStatus").value = settings.STATUS_WEBHOOK_URL || "";
-  $("#setPoll").value   = Math.round((settings.POLL_INTERVAL_MS||6000)/1000);
-  $("#setDemo").checked = !!settings.DEMO_MODE;
-  $("#overlay").classList.add("show");
-}
-function closeSettings(){ $("#overlay").classList.remove("show"); }
+/* deterministic cover hue from the topic, so a book always keeps its cover */
+function hue(s){ let h=0; for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } return h%360; }
 
-function reflectMode(){
-  $("#demoFlag").style.display = settings.DEMO_MODE ? "inline-block" : "none";
-  const lamp = $("#statuslamp");
-  lamp.classList.toggle("demo", settings.DEMO_MODE);
-  $("#lampText").textContent = settings.DEMO_MODE ? "Demo mode" : "Press is running";
+function fetchWithTimeout(url, opts, ms){
+  const ctrl = new AbortController();
+  const t = setTimeout(()=>ctrl.abort(), ms);
+  return fetch(url, Object.assign({}, opts, { signal: ctrl.signal })).finally(()=>clearTimeout(t));
 }
 
-/* ---- submit ---- */
+/* ---- composer ---- */
 $("#submitBtn").addEventListener("click", submit);
-$("#topic").addEventListener("keydown", e => { if(e.key==="Enter" && (e.metaKey||e.ctrlKey)) submit(); });
+$("#topic").addEventListener("keydown", e => { if(e.key==="Enter" && (e.metaKey||e.ctrlKey)){ e.preventDefault(); submit(); } });
+$("#chapMinus").addEventListener("click", ()=>stepChapters(-1));
+$("#chapPlus").addEventListener("click", ()=>stepChapters(1));
+function stepChapters(d){
+  const el=$("#chapters");
+  el.value=Math.min(30,Math.max(1,(parseInt(el.value,10)||8)+d));
+}
 
 async function submit(){
   const topic = $("#topic").value.trim();
-  const chapters = parseInt($("#chapters").value,10) || 1;
+  const chapters = Math.min(30, Math.max(1, parseInt($("#chapters").value,10) || 8));
   const language = $("#language").value.trim() || "English";
   if(!topic){ $("#topic").focus(); toast("Add a topic","Tell the press what to print."); return; }
-
-  if(!settings.DEMO_MODE && !settings.SUBMIT_WEBHOOK_URL){
-    toast("No webhook set","Open settings and add your submit webhook URL."); openSettings(); return;
-  }
 
   unlockAudio(); askNotifyPermission();
 
   const job = {
-    id: (crypto.randomUUID ? crypto.randomUUID() : "id-"+Date.now()+Math.random().toString(16).slice(2)),
-    catalog: nextCatalog(), topic, chapters, language,
+    id: newId(), catalog: nextCatalog(), topic, chapters, language,
     status:"processing", started:Date.now(), pdf_url:null, error:null, seen:true,
-    demoReadyAt: settings.DEMO_MODE ? Date.now() + (6000 + Math.random()*5000) : null,
   };
   jobs.unshift(job); save(); render();
-  $("#topic").value=""; $("#chapters").value="1"; $("#language").value="English";
+  $("#topic").value=""; $("#chapters").value="8"; $("#language").value="English";
   toast("Started printing","You'll hear a chime when it's ready.");
+  sendToPress(job);
+}
 
-  if(!settings.DEMO_MODE){
-    try{
-      const res = await fetch(settings.SUBMIT_WEBHOOK_URL, {
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ job_id: job.id, "Book Topic": job.topic, "chapters": job.chapters, "language": job.language })
-      });
-      // The workflow responds at the END with { status, pdf_url } on THIS request.
-      let data = null;
-      try{ data = await res.json(); }catch(e){}
-      if(res.ok && data && data.status === "done"){ markDone(job, data.pdf_url || "#"); save(); }
-      else if(data && data.status === "failed"){ markFailed(job, data.error || "Printing stopped."); save(); }
-      else if(!settings.STATUS_WEBHOOK_URL){
-        // got a response but no usable status, and no separate status webhook to poll
-        toast("Unexpected response","Webhook replied but without status:done.");
-      }
-      // if a STATUS_WEBHOOK_URL is set, polling continues as a fallback
-    }catch(err){
-      console.warn("submit request error:", err);
-      if(!settings.STATUS_WEBHOOK_URL){ markFailed(job, "Couldn't reach the webhook (timeout or CORS?)."); save(); }
-    }
+async function sendToPress(job){
+  const btn=$("#submitBtn");
+  btn.disabled=true; setTimeout(()=>{ btn.disabled=false; },800); // absorb double-clicks only
+  try{
+    const res = await fetchWithTimeout(SUBMIT_WEBHOOK_URL, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ job_id: job.id, "Book Topic": job.topic, "chapters": job.chapters, "language": job.language })
+    }, SUBMIT_TIMEOUT_MS);
+    // Short workflows answer on this request with { status, pdf_url }.
+    let data=null; try{ data=await res.json(); }catch(e){}
+    if(res.ok && data && data.status==="done"){ markDone(job, data.pdf_url||"#"); save(); }
+    else if(data && data.status==="failed"){ markFailed(job, data.error||"Printing stopped."); save(); }
+    // anything else (202, empty body, timeout below): the status poller owns it from here
+  }catch(err){
+    // timeout/abort just means the workflow is still running — polling confirms the outcome
+    console.warn("submit request:", err.name||err);
   }
 }
 
-/* ---- polling ---- */
-setInterval(tick, 1500);
-let lastPoll = {};
+/* ---- polling: per-job schedule with error backoff ---- */
+setInterval(tick, 1000);
 function tick(){
-  const now=Date.now(); let dirty=false;
+  renderTimers();
+  if(!navigator.onLine) return;
+  const now = Date.now();
   for(const job of jobs){
     if(job.status!=="processing") continue;
-    if(settings.DEMO_MODE){
-      if(job.demoReadyAt && now>=job.demoReadyAt){ markDone(job,"#demo"); dirty=true; }
-      continue;
-    }
-    if(!settings.STATUS_WEBHOOK_URL) continue;
-    if(!lastPoll[job.id] || now-lastPoll[job.id] >= settings.POLL_INTERVAL_MS){
-      lastPoll[job.id]=now; pollStatus(job);
-    }
+    const st = pollState[job.id] || (pollState[job.id] = { nextAt: now + 3000, interval: POLL_INTERVAL_MS });
+    if(now >= st.nextAt && !inFlight.has(job.id)) pollStatus(job, st);
   }
-  if(dirty) save();
-  renderTimers();
 }
-async function pollStatus(job){
+async function pollStatus(job, st){
+  inFlight.add(job.id);
   try{
-    const res = await fetch(settings.STATUS_WEBHOOK_URL, {
+    const res = await fetchWithTimeout(STATUS_WEBHOOK_URL, {
       method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({ job_id: job.id })
-    });
-    if(!res.ok) return;
+    }, 15000);
+    if(!res.ok) throw new Error("HTTP "+res.status);
     const data = await res.json();
+    st.interval = POLL_INTERVAL_MS; // healthy again
     if(data.status==="done"){ markDone(job, data.pdf_url||"#"); save(); }
     else if(data.status==="failed"){ markFailed(job, data.error||"Printing stopped."); save(); }
-  }catch(err){}
+  }catch(err){
+    st.interval = Math.min(st.interval*2, POLL_MAX_MS); // back off, keep trying
+  }finally{
+    st.nextAt = Date.now() + st.interval;
+    inFlight.delete(job.id);
+  }
 }
-function markDone(job,url){ job.status="ready"; job.pdf_url=url; job.finished=Date.now(); job.seen=false; render(); chime(); notify(job); }
-function markFailed(job,msg){ job.status="stopped"; job.error=msg; job.finished=Date.now(); job.seen=false; render(); chime(true); }
+function pollAllNow(){
+  const now=Date.now();
+  for(const job of jobs){
+    if(job.status!=="processing") continue;
+    const st = pollState[job.id] || (pollState[job.id] = { interval: POLL_INTERVAL_MS });
+    st.nextAt = now;
+  }
+}
 
+/* ---- resilience: reconnects, tab focus, other tabs ---- */
+function updateLamp(){
+  const on = navigator.onLine;
+  $("#lamp").classList.toggle("off", !on);
+  $("#lampText").textContent = on ? "Press online" : "Offline — will retry";
+}
+window.addEventListener("online", ()=>{ updateLamp(); pollAllNow(); });
+window.addEventListener("offline", updateLamp);
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) pollAllNow(); });
+window.addEventListener("storage", e => { // another tab changed the shelf — mirror it
+  if(e.key===STORE_KEY){ jobs = load(); render(); }
+});
+
+function markDone(job,url){ job.status="ready"; job.pdf_url=url; job.finished=Date.now(); job.seen=false; delete pollState[job.id]; render(); chime(); notify(job); }
+function markFailed(job,msg){ job.status="stopped"; job.error=msg; job.finished=Date.now(); job.seen=false; delete pollState[job.id]; render(); chime(true); }
+function cancelJob(job){
+  // client-side cancel: stop watching this run — the workflow itself can't be aborted from here
+  if(job.status!=="processing") return; // it may have finished while the confirm modal was open
+  job.status="stopped"; job.error="Cancelled — no longer checking on this book.";
+  job.finished=Date.now(); job.seen=true;
+  delete pollState[job.id]; inFlight.delete(job.id);
+  save(); render();
+  toast("Cancelled","Use “Try again” if you want to reprint it.");
+}
+
+function retry(job){
+  job.id = newId();               // fresh run id so the workflow treats it as a new job
+  job.status = "processing"; job.started = Date.now();
+  job.finished = null; job.pdf_url = null; job.error = null; job.seen = true;
+  save(); render();
+  toast("Sent back to the press","Printing again from the top.");
+  sendToPress(job);
+}
+
+/* ---- confirm modal (replaces native confirm) ---- */
+let confirmResolve = null, confirmReturnFocus = null;
+function confirmDialog({ title, body, yes="Yes", no="Never mind" }){
+  return new Promise(resolve => {
+    confirmResolve = resolve;
+    confirmReturnFocus = document.activeElement;
+    $("#confirmTitle").textContent = title;
+    $("#confirmBody").textContent = body;
+    $("#confirmYes").textContent = yes;
+    $("#confirmNo").textContent = no;
+    $("#confirmOverlay").classList.add("show");
+    $("#confirmNo").focus();
+  });
+}
+function settleConfirm(answer){
+  $("#confirmOverlay").classList.remove("show");
+  if(confirmResolve){ confirmResolve(answer); confirmResolve = null; }
+  if(confirmReturnFocus && document.contains(confirmReturnFocus)) confirmReturnFocus.focus();
+  confirmReturnFocus = null;
+}
+$("#confirmYes").addEventListener("click", ()=>settleConfirm(true));
+$("#confirmNo").addEventListener("click", ()=>settleConfirm(false));
+$("#confirmOverlay").addEventListener("click", e => { if(e.target.id==="confirmOverlay") settleConfirm(false); });
+document.addEventListener("keydown", e => {
+  if(!$("#confirmOverlay").classList.contains("show")) return;
+  if(e.key==="Escape") settleConfirm(false);
+  if(e.key==="Tab"){ // keep focus between the two buttons
+    e.preventDefault();
+    (document.activeElement===$("#confirmYes") ? $("#confirmNo") : $("#confirmYes")).focus();
+  }
+});
+
+/* ---- notifications & chime ---- */
 function askNotifyPermission(){ if("Notification" in window && Notification.permission==="default"){ Notification.requestPermission().catch(()=>{}); } }
 function notify(job){
   if("Notification" in window && Notification.permission==="granted"){ try{ new Notification("Your book is ready",{body:job.topic+" finished printing."}); }catch(e){} }
@@ -387,48 +427,92 @@ function chime(isError){
   });
 }
 
-$("#clearFinished").addEventListener("click", ()=>{
-  const before=jobs.length;
+/* ---- library ---- */
+clearBtn.addEventListener("click", async ()=>{
+  const finished = jobs.filter(j=>j.status!=="processing");
+  if(!finished.length) return;
+  const ok = await confirmDialog({
+    title: `Clear ${finished.length} finished book${finished.length===1?"":"s"}?`,
+    body: "They'll be taken off the shelf. Any PDF links you haven't saved elsewhere will be lost.",
+    yes: "Clear them",
+    no: "Keep them",
+  });
+  if(!ok) return;
   jobs=jobs.filter(j=>j.status==="processing");
-  if(jobs.length!==before){ save(); render(); }
+  save(); render();
+  toast("Shelf cleared","Finished books were removed.");
 });
 
 function fmtElapsed(ms){ const s=Math.floor(ms/1000); if(s<60) return s+"s"; const m=Math.floor(s/60),r=s%60; return m+"m "+(r<10?"0":"")+r+"s"; }
 function render(){
-  countEl.textContent=jobs.length+" total";
-  emptyEl.style.display=jobs.length?"none":"block";
+  const printing=jobs.filter(j=>j.status==="processing").length;
+  countEl.textContent = jobs.length ? (printing ? `${printing} printing · ${jobs.length} total` : `${jobs.length} total`) : "";
+  clearBtn.style.display = jobs.some(j=>j.status!=="processing") ? "" : "none";
+  emptyEl.style.display = jobs.length ? "none" : "block";
   jobsEl.innerHTML="";
   for(const job of jobs) jobsEl.appendChild(renderJob(job));
 }
 function renderJob(job){
   const sc = job.status==="processing"?"is-printing":job.status==="ready"?"is-ready":"is-stopped";
-  const el=document.createElement("div");
+  const el=document.createElement("article");
   el.className="job "+sc+(job.seen===false?" is-new":"");
-  if(job.seen===false){ setTimeout(()=>{ job.seen=true; save(); el.classList.remove("is-new"); },1300); }
+  if(job.seen===false){ setTimeout(()=>{ job.seen=true; save(); },600); }
   const stateLabel = job.status==="processing"?"Printing":job.status==="ready"?"Ready":"Stopped";
   let metaLine="";
-  if(job.status==="processing") metaLine=`Printing · <span data-elapsed="${job.id}">${fmtElapsed(Date.now()-job.started)}</span>`;
+  if(job.status==="processing"){
+    metaLine=`Printing · <span data-elapsed="${job.id}">${fmtElapsed(Date.now()-job.started)}</span>`;
+    if(Date.now()-job.started > LONG_RUN_MS) metaLine+=` <span class="warn">· taking longer than usual</span>`;
+  }
   else if(job.status==="ready") metaLine=`Printed in ${fmtElapsed((job.finished||job.started)-job.started)}`;
-  else metaLine=job.error||"Printing stopped.";
-  let action = job.status==="ready" ? `<a href="${job.pdf_url}" target="_blank"><button class="openbtn" data-open="${job.id}">Open PDF</button></a>` : "";
+  else metaLine=esc(job.error||"Printing stopped.");
   el.innerHTML=`
-    ${job.status==="ready"?'<span class="stamp">Printed</span>':''}
-    <div>
+    <div class="cover" style="--h:${hue(job.topic)}" aria-hidden="true">
+      <span class="ct">${esc(job.topic)}</span>
+      <span class="cn">No. ${String(job.catalog).padStart(4,"0")}</span>
+    </div>
+    <div class="body">
       <div class="catalog">No. ${String(job.catalog).padStart(4,"0")}</div>
       <div class="title">${esc(job.topic)}</div>
-      <div class="chips"><span class="chip">${job.chapters} chapters</span><span class="chip">${esc(job.language)}</span></div>
+      <div class="chips"><span class="chip">${job.chapters} chapter${job.chapters===1?"":"s"}</span><span class="chip">${esc(job.language)}</span></div>
       <div class="meta">${metaLine}</div>
     </div>
-    <div class="right">
+    <div class="actions">
       <span class="state"><span class="dot"></span>${stateLabel}</span>
-      ${action}
-      ${job.status!=="processing"?`<button class="linkbtn" data-remove="${job.id}">Remove</button>`:""}
-    </div>`;
-  el.querySelector("[data-open]")?.addEventListener("click", ()=>{
-    if(job.pdf_url==="#demo"){ toast("Demo mode","A real PDF link appears here in production."); return; }
-    window.open(job.pdf_url,"_blank");
+      ${job.status==="ready"?`<button class="openbtn" data-open>Open PDF</button>`:""}
+      <span class="subacts">
+        ${job.status==="ready"?`<button class="linkbtn" data-copy>Copy link</button>`:""}
+        ${job.status==="stopped"?`<button class="linkbtn retry" data-retry>Try again</button>`:""}
+        ${job.status==="processing"?`<button class="linkbtn danger" data-cancel>Cancel</button>`:`<button class="linkbtn" data-remove>Remove</button>`}
+      </span>
+    </div>
+    <span class="pressbar"><i></i></span>`;
+  el.querySelector("[data-open]")?.addEventListener("click", ()=>window.open(job.pdf_url,"_blank"));
+  el.querySelector("[data-copy]")?.addEventListener("click", async ()=>{
+    try{ await navigator.clipboard.writeText(job.pdf_url); toast("Link copied","The PDF link is on your clipboard."); }
+    catch(e){ toast("Couldn't copy","Open the PDF and copy its address instead."); }
   });
-  el.querySelector("[data-remove]")?.addEventListener("click", ()=>{ jobs=jobs.filter(j=>j.id!==job.id); save(); render(); });
+  el.querySelector("[data-retry]")?.addEventListener("click", ()=>retry(job));
+  el.querySelector("[data-cancel]")?.addEventListener("click", async ()=>{
+    const ok = await confirmDialog({
+      title: "Stop waiting for this book?",
+      body: "The dashboard will stop checking on it. If the press does finish it in the background, it won't show up here.",
+      yes: "Yes, cancel it",
+      no: "Keep printing",
+    });
+    if(ok) cancelJob(job);
+  });
+  el.querySelector("[data-remove]")?.addEventListener("click", async ()=>{
+    const ok = await confirmDialog({
+      title: "Remove this book?",
+      body: job.status==="ready"
+        ? `“${job.topic}” will be taken off the shelf, and its PDF link will be lost unless you've saved it elsewhere.`
+        : `“${job.topic}” will be taken off the shelf. You can always print it again from scratch.`,
+      yes: "Remove it",
+      no: "Keep it",
+    });
+    if(!ok) return;
+    jobs=jobs.filter(j=>j.id!==job.id); save(); render();
+  });
   return el;
 }
 function renderTimers(){
@@ -436,6 +520,9 @@ function renderTimers(){
     if(job.status!=="processing") continue;
     const span=document.querySelector(`[data-elapsed="${job.id}"]`);
     if(span) span.textContent=fmtElapsed(Date.now()-job.started);
+    if(Date.now()-job.started > LONG_RUN_MS && span && !span.parentElement.querySelector(".warn")){
+      span.insertAdjacentHTML("afterend", ` <span class="warn">· taking longer than usual</span>`);
+    }
   }
 }
 function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
@@ -451,8 +538,9 @@ function toast(title,body){
 }
 
 /* boot */
-reflectMode();
+updateLamp();
 render();
+pollAllNow(); // catch up on anything that finished while the tab was closed
 </script>
 </body>
 </html>
